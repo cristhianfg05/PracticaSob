@@ -20,9 +20,10 @@ import java.util.List;
 @Entity
 @XmlRootElement
 public class Console {
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Console_Gen")
-    @SequenceGenerator(name = "Console_Gen", sequenceName = "Console_Gen", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CONSOLE_GEN")
+    @SequenceGenerator(name = "CONSOLE_GEN", sequenceName = "CONSOLE_GEN", initialValue = 1, allocationSize = 1)
     private int id;
 
     private String consoleName;

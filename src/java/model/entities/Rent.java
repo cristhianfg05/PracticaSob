@@ -24,8 +24,7 @@ public class Rent {
     private static final long serialVersion = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Rent_Gen")
-    @SequenceGenerator(name = "Rent_Gen", sequenceName = "Rent_Gen",initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private Date dayRented;     //Dia que se alquila el juego
     private float totalPrice;   //Precio de este alquiler

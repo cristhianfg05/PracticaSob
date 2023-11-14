@@ -31,8 +31,7 @@ public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Game_Gen")
-    @SequenceGenerator(name = "Game_Gen", sequenceName = "Game_Gen", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String storeAdress;
     private String description;

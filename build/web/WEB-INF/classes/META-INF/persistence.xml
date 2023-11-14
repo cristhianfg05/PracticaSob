@@ -5,6 +5,8 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
         <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+        <property name="jakarta.persistence.schema-generation.scripts.create-target" value="insert.sql"/>
+        
     </properties>
   </persistence-unit>
 </persistence>

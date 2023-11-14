@@ -41,7 +41,6 @@ public class EntityService {
 
     
     
-    
     public Game changePrice(float newPrice, int id) {
         Game g = findGame(id);
         if (g != null) {
