@@ -8,11 +8,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -24,17 +29,22 @@ public class Rent {
     private static final long serialVersion = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="Rent_gen", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Rent_gen")
     private int id;
     private Date dayRented;     //Dia que se alquila el juego
     private float totalPrice;   //Precio de este alquiler
     private Date returnDate;    //Dia que tiene que devolver
     
-    @ManyToOne
-    @NotNull
-    private Game game;
+    @ManyToMany
+    @JoinTable(
+        name = "RENT_GAME",
+        joinColumns = @JoinColumn(name = "RENT_ID"),
+        inverseJoinColumns = @JoinColumn(name = "GAME_ID")
+    )
+    private List<Game> games;
 
-    @ManyToOne
+    @OneToOne
     @NotNull
     private Customer customer;
 
@@ -78,12 +88,12 @@ public class Rent {
         this.returnDate = returnDate;
     }
 
-    public Game getGame() {
-        return game;
+    public List<Game> getGames() {
+        return games;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGame(List<Game> games) {
+        this.games = games;
     }
 
     public Customer getUser() {

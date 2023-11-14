@@ -21,7 +21,8 @@ import java.util.List;
 @XmlRootElement
 public class Type {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="Type_gen", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Type_gen")
     private int id;
     
     private String typeName;

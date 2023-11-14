@@ -6,14 +6,9 @@ package model.entities;
 
 import java.io.Serializable;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
-//import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.OneToOne;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 /**
  *
@@ -26,7 +21,6 @@ public class Customer implements Serializable{
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String dni;
     
     private String nombre;
@@ -34,8 +28,8 @@ public class Customer implements Serializable{
     private String pswd;
     private String tlf;
     
-    @OneToMany(mappedBy = "customer")
-    private List<Rent> rents;
+    @OneToOne(mappedBy = "customer")
+    private Rent rent;
 
     public Customer() {
     }
@@ -77,12 +71,12 @@ public class Customer implements Serializable{
         this.tlf = tlf;
     }
 
-    public List<Rent> getRents() {
-        return rents;
+    public Rent getRent() {
+        return rent;
     }
 
-    public void setRents(List<Rent> rents) {
-        this.rents = rents;
+    public void setRent(Rent rent) {
+        this.rent = rent;
     }
 
     public String getPswd() {
@@ -95,7 +89,7 @@ public class Customer implements Serializable{
 
     @Override
     public String toString() {
-        return "User{" + "dni=" + dni + ", nombre=" + nombre + ", homeAdress=" + homeAdress + ", tlf=" + tlf + ", rents=" + rents + '}';
+        return "User{" + "dni=" + dni + ", nombre=" + nombre + ", homeAdress=" + homeAdress + ", tlf=" + tlf + ", rents=" + rent + '}';
     }
     
     

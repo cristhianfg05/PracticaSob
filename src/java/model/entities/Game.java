@@ -31,7 +31,8 @@ public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="Game_gen", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Game_gen") 
     private int id;
     private String storeAdress;
     private String description;
@@ -39,7 +40,7 @@ public class Game implements Serializable {
     private float price;
     private String title;
 
-    @OneToMany(mappedBy = "game")
+    @ManyToMany(mappedBy = "games")
     private List<Rent> rents;
 
     @ManyToOne

@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import model.entities.Game;
 import model.entities.Rent;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -70,7 +71,6 @@ public class EntityService {
         return validTypes.contains(type);
     }
 
-    /**
     @Path("game")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ public class EntityService {
         // Obtener los resultados y responder
         List<Game> games = query.getResultList();
         return games;
-    }**/
+    }
 
     public Rent createRent(int id, Date dayRent, Date returnDay, float totalPrice, boolean autenticat) {
         if (autenticat) {
