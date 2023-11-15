@@ -9,15 +9,13 @@ package service;
  * @author crist
  */
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
 import model.entities.Game;
 import model.entities.Rent;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,7 +28,7 @@ public class EntityService {
     protected EntityManager em;
 
     public EntityService(EntityManager em) {
-        this.em = em;
+        this.em= em;
     }
 
     public void deleteGame(int id) {
@@ -74,42 +72,10 @@ public class EntityService {
     @Path("game")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Game> getGames(
-            @QueryParam("type") String type,
-            @QueryParam("console") String console
-    ) {
-        // Validar que los parámetros sean correctos (opcional)
-        if ((type != null && !isValidType(type)) || (console != null && !isValidConsole(console))) {
-            throw new BadRequestException("Parámetros incorrectos");
-        }
-
-        // Construir la consulta con la cláusula ORDER BY
-        StringBuilder queryString = new StringBuilder("SELECT e FROM Game e");
-
-        if (type != null && console != null) {
-            queryString.append(" WHERE e.type = :type AND e.console = :console ORDER BY e.name ASC");
-        } else if (type != null) {
-            queryString.append(" WHERE e.type = :type ORDER BY e.name ASC");
-        } else if (console != null) {
-            queryString.append(" WHERE e.console = :console ORDER BY e.name ASC");
-        } else {
-            queryString.append(" ORDER BY e.name ASC");
-        }
-
-        // Crear la consulta
-        Query query = em.createQuery(queryString.toString());
-
-        if (type != null) {
-            query.setParameter("type", type);
-        }
-
-        if (console != null) {
-            query.setParameter("console", console);
-        }
-
-        // Obtener los resultados y responder
-        List<Game> games = query.getResultList();
-        return games;
+    public List<Game> getGames() {
+        jakarta.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+        cq.select(cq.from(Game.class));
+        return em.createQuery(cq).getResultList();
     }
 
     public Rent createRent(int id, Date dayRent, Date returnDay, float totalPrice, boolean autenticat) {

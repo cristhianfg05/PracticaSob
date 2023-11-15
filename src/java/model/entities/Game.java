@@ -14,9 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
-//import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
@@ -31,8 +29,8 @@ public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name="Game_gen", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Game_gen") 
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Game_Gen")
+    @SequenceGenerator(name = "Game_Gen", sequenceName = "Game_Seq", initialValue = 1, allocationSize = 1)
     private int id;
     private String storeAdress;
     private String description;
@@ -40,7 +38,7 @@ public class Game implements Serializable {
     private float price;
     private String title;
 
-    @ManyToMany(mappedBy = "games")
+    @ManyToMany
     private List<Rent> rents;
 
     @ManyToOne

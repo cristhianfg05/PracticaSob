@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
@@ -29,14 +28,14 @@ public class Rent {
     private static final long serialVersion = 1L;
     
     @Id
-    @SequenceGenerator(name="Rent_gen", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Rent_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Rent_Gen")
+    @SequenceGenerator(name = "Rent_Gen", sequenceName = "Rent_Seq", initialValue = 1, allocationSize = 1)
     private int id;
     private Date dayRented;     //Dia que se alquila el juego
     private float totalPrice;   //Precio de este alquiler
     private Date returnDate;    //Dia que tiene que devolver
     
-    @ManyToMany
+    @ManyToMany(mappedBy = "rents")
     @JoinTable(
         name = "RENT_GAME",
         joinColumns = @JoinColumn(name = "RENT_ID"),

@@ -7,6 +7,7 @@ package model.entities;
 import java.io.Serializable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -29,6 +30,7 @@ public class Customer implements Serializable{
     private String tlf;
     
     @OneToOne(mappedBy = "customer")
+    @JoinColumn(name="RENT_ID")
     private Rent rent;
 
     public Customer() {

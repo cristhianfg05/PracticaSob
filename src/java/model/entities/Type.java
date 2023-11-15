@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.TableGenerator;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
@@ -21,8 +22,8 @@ import java.util.List;
 @XmlRootElement
 public class Type {
     @Id
-    @SequenceGenerator(name="Type_gen", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Type_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Type_Gen")
+    @SequenceGenerator(name = "Type_Gen", sequenceName = "Type_Seq", initialValue = 1, allocationSize = 1)
     private int id;
     
     private String typeName;

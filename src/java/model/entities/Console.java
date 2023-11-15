@@ -22,8 +22,8 @@ import java.util.List;
 public class Console {
     
     @Id
-    @SequenceGenerator(name="Console_gen", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Console_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Console_Gen")
+    @SequenceGenerator(name = "Console_Gen", sequenceName = "Console_Seq", initialValue = 1, allocationSize = 1) 
     private int id;
 
     private String consoleName;
