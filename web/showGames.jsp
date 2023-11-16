@@ -4,13 +4,13 @@
 <%@ page import="jakarta.persistence.EntityManager" %>
 <%@ page import="jakarta.persistence.Persistence" %>
 <%@ page import="model.entities.Game" %>
-<%@ page import="service.EntityService" %>
+<%@ page import="service.GameService" %>
 
 <%
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("Homework1PU");
     EntityManager em = emf.createEntityManager();
-    EntityService ent = new EntityService(em);
-    List<Game> games = ent.getGames();
+    GameService ent = new GameService();
+    List<Game> games = ent.findAll();
 %>
 
 <!DOCTYPE html>
