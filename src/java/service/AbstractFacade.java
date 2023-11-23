@@ -5,6 +5,7 @@
 package service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 /**
@@ -39,13 +40,13 @@ public abstract class AbstractFacade<T> {
     }
 
     public List<T> findAll() {
-        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
     }
 
     public List<T> findRange(int[] range) {
-        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         jakarta.persistence.Query q = getEntityManager().createQuery(cq);
         q.setMaxResults(range[1] - range[0] + 1);

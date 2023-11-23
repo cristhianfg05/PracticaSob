@@ -8,14 +8,23 @@ package service;
  *
  * @author crist
  */
+import authn.Secured;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import model.entities.Game;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -31,11 +40,19 @@ public class GameService extends AbstractFacade<Game>{
 
     @GET
     @Override
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Game> findAll() {
         return super.findAll();
     }
-
+    
+    @POST
+    @Override
+    @Secured
+    @Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+    public void create(Game g) {
+        super.create(g);
+    }
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;

@@ -5,6 +5,7 @@
 package model.entities;
 
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import java.io.Serializable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -92,6 +93,7 @@ public class Game implements Serializable {
         this.title = title;
     }
 
+    @JsonbTransient
     public Console getConsole() {
         return console;
     }
@@ -99,7 +101,8 @@ public class Game implements Serializable {
     public void setConsole(Console console) {
         this.console = console;
     }
-
+    
+    @JsonbTransient
     public List<Type> getTypes() {
         return types;
     }
@@ -123,7 +126,8 @@ public class Game implements Serializable {
     public void setDisponible(boolean disponible) {
         this.disponible = disponible;
     }
-
+    
+    @JsonbTransient
     public List<Rent> getRents() {
         return rents;
     }
