@@ -4,8 +4,10 @@
  */
 package service;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 /**
@@ -23,9 +25,17 @@ public abstract class AbstractFacade<T> {
 
     protected abstract EntityManager getEntityManager();
 
-    public void create(T entity) {
-        getEntityManager().persist(entity);
+    public Response create(T entity) {
+        try{
+            getEntityManager().persist(entity);
+            return Response.ok().build();
+        }catch(Exception e){
+            return Response.status(Response.Status.CONFLICT).build();
+
+        }
     }
+    
+
 
     public void edit(T entity) {
         getEntityManager().merge(entity);

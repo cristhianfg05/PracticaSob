@@ -8,6 +8,8 @@ package model.entities;
 import jakarta.json.bind.annotation.JsonbTransient;
 import java.io.Serializable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,9 +44,18 @@ public class Game implements Serializable {
     @ManyToMany
     private List<Rent> rents;
 
-    @ManyToOne
-    @JoinColumn(name = "console_id")
+    @Enumerated(EnumType.STRING)
     private Console console;
+    
+    public enum Console{
+        GameBoy,
+        Nds,
+        PS1,
+        PS2,
+        N64,
+        GameCube,
+        MegaDrive
+    }
 
     @ManyToMany
     @JoinTable(
@@ -93,7 +104,6 @@ public class Game implements Serializable {
         this.title = title;
     }
 
-    @JsonbTransient
     public Console getConsole() {
         return console;
     }
