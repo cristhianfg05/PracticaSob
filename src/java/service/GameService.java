@@ -13,14 +13,23 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import model.entities.Game;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
+import model.entities.Game.Console;
+import model.entities.Game.Type;
 
 
 @Stateless
@@ -35,11 +44,31 @@ public class GameService extends AbstractFacade<Game> {
     }
 
     
-    @GET
-    @Override
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Game> findAll() {
-        return super.findAll();
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public List<Game> findGameByTypeConsole(
+        @PathParam("type") String type,
+        @PathParam("console") String console
+) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Game> cq = cb.createQuery(Game.class);
+        Root<Game> root = cq.from(Game.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (console != null && !console.isEmpty()) {
+            Join<Game, Console> consoleJoin = root.join("console");
+            predicates.add(cb.equal(consoleJoin.get("consoleName"), console));
+        }
+
+        if (type != null && !type.isEmpty()) {
+            Join<Game, Type> typeJoin = root.join("types");
+            predicates.add(cb.equal(typeJoin.get("typeName"), type));
+        }
+
+        cq.where(predicates.toArray(new Predicate[0]));
+
+        return getEntityManager().createQuery(cq).getResultList();
     }
 
     @POST
@@ -54,32 +83,5 @@ public class GameService extends AbstractFacade<Game> {
     protected EntityManager getEntityManager() {
         return em;
     }
-
-    /**
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Game> findAll1(
-            @QueryParam("type") String typeName,
-            @QueryParam("console") String consoleName) {
-
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Game> cq = cb.createQuery(Game.class);
-        Root<Game> gameRoot = cq.from(Game.class);
-        Join<Game, Console> consoleJoin = gameRoot.join("console", JoinType.INNER);
-        Join<Game, Type> typeJoin = gameRoot.join("types", JoinType.INNER);
-
-        cq.select(gameRoot);
-
-        // Añadir condiciones para la consola y el tipo si se proporcionan
-        if (consoleName != null && !consoleName.isEmpty()) {
-            cq.where(cb.equal(consoleJoin.get("consoleName"), consoleName));
-        }
-
-        if (typeName != null && !typeName.isEmpty()) {
-            cq.where(cb.equal(typeJoin.get("typeName"), typeName));
-        }
-
-        return getEntityManager().createQuery(cq).getResultList();
-    }**/
 
 }

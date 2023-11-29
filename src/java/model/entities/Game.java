@@ -57,13 +57,16 @@ public class Game implements Serializable {
         MegaDrive
     }
 
-    @ManyToMany
-    @JoinTable(
-        name = "game_type",
-        joinColumns = @JoinColumn(name = "game_id"),
-        inverseJoinColumns = @JoinColumn(name = "type_id")
-    )
-    private List<Type> types;
+    @Enumerated(EnumType.STRING)
+    private Type type;
+    
+    public enum Type{
+        Action,
+        Adventure,
+        Platform,
+        Puzzle,
+        Horror
+    }
 
     public Game() {
     }
@@ -88,6 +91,16 @@ public class Game implements Serializable {
         this.description = description;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    
+    
     public float getPrice() {
         return price;
     }
@@ -112,15 +125,6 @@ public class Game implements Serializable {
         this.console = console;
     }
     
-    @JsonbTransient
-    public List<Type> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<Type> types) {
-        this.types = types;
-    }
-
     public String getStoreAdress() {
         return storeAdress;
     }
@@ -146,18 +150,4 @@ public class Game implements Serializable {
         this.rents = rents;
     }
 
-    @Override
-    public String toString() {
-        return "Game{" +
-                "id=" + id +
-                ", storeAdress='" + storeAdress + '\'' +
-                ", description='" + description + '\'' +
-                ", disponible=" + disponible +
-                ", price=" + price +
-                ", title='" + title + '\'' +
-                ", rents=" + rents +
-                ", console=" + console +
-                ", types=" + types +
-                '}';
-    }
 }
