@@ -8,6 +8,8 @@ import java.io.Serializable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -18,6 +20,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Customer.findByDNI", query = "SELECT c FROM Customer c WHERE c.dni = :dni")})
 public class Customer implements Serializable{
     private static final long serialVersionUID = 1L;
     

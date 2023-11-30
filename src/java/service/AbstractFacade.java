@@ -10,6 +10,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import model.entities.Customer;
 import model.entities.Game;
 import model.entities.Game.Console;
 import model.entities.Game.Type;
@@ -75,12 +76,12 @@ public abstract class AbstractFacade<T> {
     }
 
     public List<Game> findWithType(String type) {
-        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByType").setParameter("type", type);
+        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByType").setParameter("type", Type.valueOf(type));
         return query.getResultList();
     }
 
     public List<Game> findWithConsole(String console) {
-        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByConsole").setParameter("console", console);
+        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByConsole").setParameter("console", Console.valueOf(console));
         return query.getResultList();
     }
 
@@ -89,5 +90,11 @@ public abstract class AbstractFacade<T> {
         query.setParameter("type", Type.valueOf(type));
         query.setParameter("console", Console.valueOf(console));
         return query.getResultList();
+    }
+
+    public Customer findByDNI(String dni) {
+    TypedQuery<T> query = getEntityManager().createNamedQuery("Customer.findByDNI", entityClass);
+    query.setParameter("dni", dni);
+    return (Customer) query.getSingleResult();
     }
 }

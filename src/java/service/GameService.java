@@ -13,7 +13,6 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import model.entities.Game;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -23,7 +22,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import model.entities.Game.Type;
 
 @Stateless
 @Path("game")
@@ -49,11 +47,11 @@ public class GameService extends AbstractFacade<Game> {
         if (type != null && console == null) {
             return super.findWithType(type);
         }
-        
-        if(type != null && console != null){
+
+        if (type != null && console != null) {
             return super.findWithTypeAndConsole(type, console);
         }
-        
+
         return super.findAll();
     }
 

@@ -40,7 +40,9 @@ public class RentService extends AbstractFacade<Rent> {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public RentDTO getRentById(@PathParam("id") int rentId) {
+    public RentDTO getRentById(
+            @PathParam("id") int rentId
+    ) {
         Rent rent = super.find(rentId);
 
         if (rent == null) {
@@ -50,11 +52,11 @@ public class RentService extends AbstractFacade<Rent> {
         RentDTO rentDTO = convertToDTO(rent);
         return rentDTO;
     }
-    
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Rent postNewRent(Rent r){
+    public Rent postNewRent(Rent r) {
         super.create(r);
         return (r);
     }
