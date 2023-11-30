@@ -13,24 +13,17 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import model.entities.Game;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.Query;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
-import model.entities.Game.Console;
 import model.entities.Game.Type;
-
 
 @Stateless
 @Path("game")
@@ -43,32 +36,25 @@ public class GameService extends AbstractFacade<Game> {
         super(Game.class);
     }
 
-    
-@GET
-@Produces(MediaType.APPLICATION_JSON)
-public List<Game> findGameByTypeConsole(
-        @PathParam("type") String type,
-        @PathParam("console") String console
-) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Game> cq = cb.createQuery(Game.class);
-        Root<Game> root = cq.from(Game.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-
-        if (console != null && !console.isEmpty()) {
-            Join<Game, Console> consoleJoin = root.join("console");
-            predicates.add(cb.equal(consoleJoin.get("consoleName"), console));
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Game> findAll(
+            @QueryParam("type") String type,
+            @QueryParam("console") String console
+    ) {
+        if (type == null && console != null) {
+            return super.findWithConsole(console);
         }
 
-        if (type != null && !type.isEmpty()) {
-            Join<Game, Type> typeJoin = root.join("types");
-            predicates.add(cb.equal(typeJoin.get("typeName"), type));
+        if (type != null && console == null) {
+            return super.findWithType(type);
         }
-
-        cq.where(predicates.toArray(new Predicate[0]));
-
-        return getEntityManager().createQuery(cq).getResultList();
+        
+        if(type != null && console != null){
+            return super.findWithTypeAndConsole(type, console);
+        }
+        
+        return super.findAll();
     }
 
     @POST

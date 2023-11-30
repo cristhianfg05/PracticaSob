@@ -17,6 +17,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -26,8 +28,15 @@ import java.util.List;
  * @author Cristhian y Arnau
  */
 
+
 @Entity
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "game.findByTypeAndConsole", query = "SELECT g FROM Game g WHERE g.type = :type AND g.console = :console"),
+    @NamedQuery(name = "game.findByConsole", query = "SELECT g FROM Game g WHERE g.console = :console"),
+    @NamedQuery(name = "game.findByType", query = "SELECT g FROM Game g WHERE g.type = :type")
+})
+
 public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 

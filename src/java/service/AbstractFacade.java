@@ -6,9 +6,13 @@ package service;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import model.entities.Game;
+import model.entities.Game.Console;
+import model.entities.Game.Type;
 
 /**
  *
@@ -26,16 +30,14 @@ public abstract class AbstractFacade<T> {
     protected abstract EntityManager getEntityManager();
 
     public Response create(T entity) {
-        try{
+        try {
             getEntityManager().persist(entity);
             return Response.ok().build();
-        }catch(Exception e){
+        } catch (Exception e) {
             return Response.status(Response.Status.CONFLICT).build();
 
         }
     }
-    
-
 
     public void edit(T entity) {
         getEntityManager().merge(entity);
@@ -71,5 +73,21 @@ public abstract class AbstractFacade<T> {
         jakarta.persistence.Query q = getEntityManager().createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
     }
-    
+
+    public List<Game> findWithType(String type) {
+        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByType").setParameter("type", type);
+        return query.getResultList();
+    }
+
+    public List<Game> findWithConsole(String console) {
+        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByConsole").setParameter("console", console);
+        return query.getResultList();
+    }
+
+    public List<Game> findWithTypeAndConsole(String type, String console) {
+        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByTypeAndConsole");
+        query.setParameter("type", Type.valueOf(type));
+        query.setParameter("console", Console.valueOf(console));
+        return query.getResultList();
+    }
 }
