@@ -19,6 +19,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -31,7 +32,8 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = "game.findByTypeAndConsole", query = "SELECT g FROM Game g WHERE g.type = :type AND g.console = :console"),
     @NamedQuery(name = "game.findByConsole", query = "SELECT g FROM Game g WHERE g.console = :console"),
-    @NamedQuery(name = "game.findByType", query = "SELECT g FROM Game g WHERE g.type = :type")
+    @NamedQuery(name = "game.findByType", query = "SELECT g FROM Game g WHERE g.type = :type"),
+    @NamedQuery(name = "game.findIn", query = "SELECT g FROM Game g WHERE g.id IN :ids")
 })
 
 public class Game implements Serializable {
@@ -47,7 +49,7 @@ public class Game implements Serializable {
     private float price;
     private String title;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "games")
     private List<Rent> rents;
 
     @Enumerated(EnumType.STRING)
@@ -155,5 +157,13 @@ public class Game implements Serializable {
     public void setRents(List<Rent> rents) {
         this.rents = rents;
     }
+    
 
+    public boolean equalGame(Game g){
+        if(this.console.equals(g.getConsole()) && this.description.equalsIgnoreCase(g.getDescription()) && this.title.equalsIgnoreCase(g.getTitle())){
+            return true;
+        }
+        return false;
+    }
+    
 }

@@ -8,6 +8,7 @@ import DTO.RentDTO;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -15,6 +16,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import java.util.List;
+import model.entities.Game;
 import model.entities.Rent;
 
 /**
@@ -56,9 +59,14 @@ public class RentService extends AbstractFacade<Rent> {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Rent postNewRent(Rent r) {
+    public RentDTO postNewRent(Rent r) {
+        System.out.println("IDS: "+r.getGameIds());
+        Query findIn = em.createNamedQuery("game.findIn").setParameter("ids", r.getGameIds());
+        List<Game> gameList = findIn.getResultList();
+        r.setGame(gameList);
+        System.out.print("RENTAL"+r);
         super.create(r);
-        return (r);
+        return (convertToDTO(r));
     }
 
     private RentDTO convertToDTO(Rent rent) {

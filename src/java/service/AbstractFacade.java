@@ -49,7 +49,12 @@ public abstract class AbstractFacade<T> {
     }
 
     public T find(Object id) {
-        return getEntityManager().find(entityClass, id);
+        try{
+            return getEntityManager().find(entityClass, id);
+        }catch(Exception e){
+            return null;
+        }
+        
     }
 
     public List<T> findAll() {
@@ -73,28 +78,5 @@ public abstract class AbstractFacade<T> {
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         jakarta.persistence.Query q = getEntityManager().createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
-    }
-
-    public List<Game> findWithType(String type) {
-        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByType").setParameter("type", Type.valueOf(type));
-        return query.getResultList();
-    }
-
-    public List<Game> findWithConsole(String console) {
-        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByConsole").setParameter("console", Console.valueOf(console));
-        return query.getResultList();
-    }
-
-    public List<Game> findWithTypeAndConsole(String type, String console) {
-        TypedQuery<Game> query = (TypedQuery<Game>) getEntityManager().createNamedQuery("game.findByTypeAndConsole");
-        query.setParameter("type", Type.valueOf(type));
-        query.setParameter("console", Console.valueOf(console));
-        return query.getResultList();
-    }
-
-    public Customer findByDNI(String dni) {
-    TypedQuery<T> query = getEntityManager().createNamedQuery("Customer.findByDNI", entityClass);
-    query.setParameter("dni", dni);
-    return (Customer) query.getSingleResult();
     }
 }

@@ -4,6 +4,7 @@
  */
 package model.entities;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,8 +14,11 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +39,7 @@ public class Rent {
     private float totalPrice;   //Precio de este alquiler
     private Date returnDate;    //Dia que tiene que devolver
     
-    @ManyToMany(mappedBy = "rents")
+    @ManyToMany
     @JoinTable(
         name = "RENT_GAME",
         joinColumns = @JoinColumn(name = "RENT_ID"),
@@ -46,12 +50,16 @@ public class Rent {
     @OneToOne
     @NotNull
     private Customer customer;
+    
+    @Transient
+    private Collection<Integer> gameIds = new ArrayList();
 
     public Rent() {
     }
 
     public Rent(int id) {
         this.id = id;
+        this.games = new ArrayList();
     }
 
     public int getId() {
@@ -102,7 +110,23 @@ public class Rent {
     public void setUser(Customer customer) {
         this.customer = customer;
     }
-    
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Collection<Integer> getGameIds() {
+        return gameIds;
+    }
+
+    public void setGameIds(Collection<Integer> gameIds) {
+        this.gameIds = gameIds;
+    }
+        
     
 
     @Override

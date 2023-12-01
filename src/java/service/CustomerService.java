@@ -9,6 +9,7 @@ import authn.Secured;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
@@ -16,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import model.entities.Customer;
@@ -37,27 +39,31 @@ public class CustomerService extends AbstractFacade<Customer> {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CustomerDTO> findAllDTO() {
+    public Response findAllDTO() {
         List<Customer> customers = super.findAll();
         List<CustomerDTO> custDTO = new ArrayList<>();
 
         for (Customer customer : customers) {
             custDTO.add(convertToDTO(customer));
         }
-        return custDTO;
+        return Response.status(Response.Status.OK).entity(custDTO).build();
     }
 
     @GET
     @Path("/{dni}")
     @Produces(MediaType.APPLICATION_JSON)
-    public CustomerDTO findCustDNI(
+    public Response findCustDNI(
             @PathParam("dni") String dni
     ) {
-        Customer c = super.findByDNI(dni);
-        if (c == null) {
+        TypedQuery<Customer> query = (TypedQuery<Customer>) em.createNamedQuery("Customer.findByDNI");
+        query.setParameter("dni", dni);
+        Customer c;
+        try {
+            c = (Customer) query.getSingleResult();
+        } catch (Exception e) {
             return null;
         }
-        return convertToDTO(c);
+        return Response.status(Response.Status.OK).entity(convertToDTO(c)).build();
     }
 
     @Override
@@ -76,20 +82,25 @@ public class CustomerService extends AbstractFacade<Customer> {
     @PUT
     @Path("/{dni}")
     @Secured
-    @Consumes(MediaType.APPLICATION_JSON)
-    public CustomerDTO edditCustomer(
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response edditCustomer(
             @PathParam("dni") String dni,
             Customer cNew
     ) {
-        Customer c = super.findByDNI(dni);
-        if(c == null)
-            return null;
+        TypedQuery<Customer> query = (TypedQuery<Customer>) em.createNamedQuery("Customer.findByDNI");
+        query.setParameter("dni", dni);
+        Customer c;
+        try {
+            c = (Customer) query.getSingleResult();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
         c.setHomeAdress(cNew.getHomeAdress());
         c.setNombre(cNew.getNombre());
         c.setPswd(cNew.getPswd());
         c.setTlf(cNew.getTlf());
         super.edit(c);
-        return convertToDTO(c);
+        return Response.status(Response.Status.OK).entity(convertToDTO(c)).build();
     }
 
 }
