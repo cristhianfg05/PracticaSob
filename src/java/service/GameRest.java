@@ -28,15 +28,28 @@ import model.entities.Game.Type;
 
 @Stateless
 @Path("game")
-public class GameService extends AbstractFacade<Game> {
+public class GameRest extends AbstractFacade<Game> {
 
     @PersistenceContext(unitName = "Homework1PU")
     protected EntityManager em;
 
-    public GameService() {
+    public GameRest() {
         super(Game.class);
     }
 
+    /**
+     * GET todos los juegos por type, console, type+console o sin parametros
+     * 
+     * @param type Enum tipo de juego
+     * @param console Enum consola del juego
+     * @return Response OK query console si el param console existe + games
+     * @return Response BAD_REQUEST si el param type es null y console no existe
+     * @return Response OK query type si el param type existe + games
+     * @return Response BAD_REQUEST si el param console es null y type no existe
+     * @return Response OK query si ambos params existen + games
+     * @return Response BAD_REQUEST si ambos parametros no existen
+     * @return Response OK query si ambos params estan vacios + games
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAll(
@@ -47,7 +60,6 @@ public class GameService extends AbstractFacade<Game> {
             if (isValidConsole(console)) {
                 TypedQuery<Game> query= (TypedQuery<Game>) em.createNamedQuery("game.findByConsole");
                 query.setParameter("console", Console.valueOf(console));
-                
                 return Response.status(Response.Status.OK).entity(query.getResultList()).build();
             }else{
                 return Response.status(Response.Status.BAD_REQUEST).entity("Console no validos").build();
@@ -76,6 +88,15 @@ public class GameService extends AbstractFacade<Game> {
         return Response.status(Response.Status.OK).entity(super.findAll()).build();
     }
 
+    /**
+     * POST new Game
+     * 
+     * @param g Juego a añadir
+     * @return Response NO_CONTENT si el JSON recibido esta vacio
+     * @return Response CONFLICT si el JSON esta mal construido
+     * @return Response CONFLICT si el juego ya existe en el sistema
+     * @return Response CREATED si el juego puede ser añadido
+     */
     @POST
     @Override
     @Secured
@@ -84,7 +105,7 @@ public class GameService extends AbstractFacade<Game> {
         if (g == null) {
             return Response.status(Response.Status.NO_CONTENT).entity("No hay un json hecho").build();
         } else if (checkCorrectGame(g)) {
-            return Response.status(Response.Status.NO_CONTENT).entity("No hay un json hecho").build();
+            return Response.status(Response.Status.CONFLICT).entity("json mal construido").build();
         } else if (checkRepeatedGame(g, super.findAll())) {
             return Response.status(Response.Status.CONFLICT).entity("Juego Repetido").build();
         } else {

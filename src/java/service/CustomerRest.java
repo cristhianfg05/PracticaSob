@@ -28,20 +28,30 @@ import model.entities.Customer;
  */
 @Stateless
 @Path("/customer")
-public class CustomerService extends AbstractFacade<Customer> {
+public class CustomerRest extends AbstractFacade<Customer> {
 
     @PersistenceContext(unitName = "Homework1PU")
     protected EntityManager em;
 
-    public CustomerService() {
+    public CustomerRest() {
         super(Customer.class);
     }
 
+    /**
+     * GET todos los Rent
+     *
+     * @return Response NO_CONTENT si no hay customers en la base de datos
+     * @return Response OK si tenemos algun customer en la base de datos
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAllDTO() {
         List<Customer> customers = super.findAll();
         List<CustomerDTO> custDTO = new ArrayList<>();
+
+        if (customers.isEmpty()) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
 
         for (Customer customer : customers) {
             custDTO.add(convertToDTO(customer));
@@ -49,19 +59,22 @@ public class CustomerService extends AbstractFacade<Customer> {
         return Response.status(Response.Status.OK).entity(custDTO).build();
     }
 
+    /**
+     * GET customer unico segun dni
+     *
+     * @param dni del Customer
+     * @return Response NO_CONTENT si no existe el customer
+     * @return Response OK si existe el customer
+     */
     @GET
     @Path("/{dni}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findCustDNI(
             @PathParam("dni") String dni
     ) {
-        TypedQuery<Customer> query = (TypedQuery<Customer>) em.createNamedQuery("Customer.findByDNI");
-        query.setParameter("dni", dni);
-        Customer c;
-        try {
-            c = (Customer) query.getSingleResult();
-        } catch (Exception e) {
-            return null;
+        Customer c = em.find(Customer.class, dni);
+        if (c == null) {
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
         return Response.status(Response.Status.OK).entity(convertToDTO(c)).build();
     }
@@ -79,6 +92,14 @@ public class CustomerService extends AbstractFacade<Customer> {
         return dto;
     }
 
+    /**
+     * PUT edit customer segun dni
+     *
+     * @param dni Customer a modificar
+     * @param cNew Nuevos datos
+     * @return Response NO_CONTENT Si el customer a modificar no existe
+     * @return Response OK Si el customer a modificar existe
+     */
     @PUT
     @Path("/{dni}")
     @Secured
@@ -87,18 +108,29 @@ public class CustomerService extends AbstractFacade<Customer> {
             @PathParam("dni") String dni,
             Customer cNew
     ) {
-        TypedQuery<Customer> query = (TypedQuery<Customer>) em.createNamedQuery("Customer.findByDNI");
-        query.setParameter("dni", dni);
-        Customer c;
-        try {
-            c = (Customer) query.getSingleResult();
-        } catch (Exception e) {
+
+        Customer c = em.find(Customer.class, dni);
+        if (c == null) {
             return Response.status(Response.Status.NO_CONTENT).build();
         }
-        c.setHomeAdress(cNew.getHomeAdress());
-        c.setNombre(cNew.getNombre());
-        c.setPswd(cNew.getPswd());
-        c.setTlf(cNew.getTlf());
+
+        if (cNew.getHomeAdress() != null) {
+            c.setHomeAdress(cNew.getHomeAdress());
+        }
+
+        if (cNew.getNombre() != null) {
+            c.setNombre(cNew.getNombre());
+        }
+
+        if (cNew.getPswd() != null) {
+            c.setPswd(cNew.getPswd());
+        }
+
+        if (cNew.getTlf() != null) //Se podria añadir un control para que el telefono tenga 9 numeros y sea real
+        {
+            c.setTlf(cNew.getTlf());
+        }
+
         super.edit(c);
         return Response.status(Response.Status.OK).entity(convertToDTO(c)).build();
     }

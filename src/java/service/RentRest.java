@@ -28,12 +28,12 @@ import model.entities.Rent;
  */
 @Stateless
 @Path("rental")
-public class RentService extends AbstractFacade<Rent> {
+public class RentRest extends AbstractFacade<Rent> {
 
     @PersistenceContext(unitName = "Homework1PU")
     protected EntityManager em;
 
-    public RentService() {
+    public RentRest() {
         super(Rent.class);
     }
 
@@ -42,6 +42,13 @@ public class RentService extends AbstractFacade<Rent> {
         return em;
     }
 
+    /**
+     * GET Rent según el ID proporcionado en la request
+     * 
+     * @param rentId
+     * @return Response NO_CONTENT si el id proporcionado no existe
+     * @return Response OK si existe el Rent 
+     */
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -55,19 +62,42 @@ public class RentService extends AbstractFacade<Rent> {
         }
 
         RentDTO rentDTO = convertToDTO(rent);
-        return Response.status(Response.Status.CREATED).entity(rentDTO).build();
+        return Response.status(Response.Status.OK).entity(rentDTO).build();
     }
 
+    /**
+     * POST nuevo Rent si existen los juegos del body de la request
+     * y el customer al que va enlazado
+     * 
+     * @param r Rent a crear
+     * @return Response CONFLICT si la lista de juegos esta vacia
+     * @return Response CONFLICT si hay un juego que no existe en el sistema
+     * @return Response CONFLICT si el customer al que va el rent no existe
+     * @return Response CREATED si el JSON es correcto
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postNewRent(Rent r) {
         Query findIn = em.createNamedQuery("game.findIn").setParameter("ids", r.getGameIds());
+        List<Integer> ids = (List<Integer>) r.getGameIds();
         List<Game> gameList = findIn.getResultList();
-        if(gameList.size() == 0)
+        if (ids.isEmpty()) {
             return Response.status(Response.Status.CONFLICT).entity("La lista de GAMES esta vacia").build();
+        }
+        int i = 0;
+        while (i < ids.size()) {
+            if (em.find(Game.class, ids.get(i)) == null) {
+                return Response.status(Response.Status.CONFLICT).entity("Uno o mas juegos no existe en el sistema").build();
+            }
+            i++;
+        }
+
         r.setGame(gameList);
-        r.setCustomer(em.find(Customer.class,r.getCustomerDni()));
+        if (em.find(Customer.class, r.getCustomerDni()) == null) {
+            return Response.status(Response.Status.CONFLICT).entity("El customer no existe en el sistema").build();
+        }
+        r.setCustomer(em.find(Customer.class, r.getCustomerDni()));
         super.create(r);
         return Response.status(Response.Status.CREATED).entity(convertToDTO(r)).build();
     }
