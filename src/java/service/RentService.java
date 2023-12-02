@@ -16,7 +16,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
+import model.entities.Customer;
 import model.entities.Game;
 import model.entities.Rent;
 
@@ -43,30 +45,31 @@ public class RentService extends AbstractFacade<Rent> {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public RentDTO getRentById(
+    public Response getRentById(
             @PathParam("id") int rentId
     ) {
         Rent rent = super.find(rentId);
 
         if (rent == null) {
-            return null;
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
 
         RentDTO rentDTO = convertToDTO(rent);
-        return rentDTO;
+        return Response.status(Response.Status.CREATED).entity(rentDTO).build();
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public RentDTO postNewRent(Rent r) {
-        System.out.println("IDS: "+r.getGameIds());
+    public Response postNewRent(Rent r) {
         Query findIn = em.createNamedQuery("game.findIn").setParameter("ids", r.getGameIds());
         List<Game> gameList = findIn.getResultList();
+        if(gameList.size() == 0)
+            return Response.status(Response.Status.CONFLICT).entity("La lista de GAMES esta vacia").build();
         r.setGame(gameList);
-        System.out.print("RENTAL"+r);
+        r.setCustomer(em.find(Customer.class,r.getCustomerDni()));
         super.create(r);
-        return (convertToDTO(r));
+        return Response.status(Response.Status.CREATED).entity(convertToDTO(r)).build();
     }
 
     private RentDTO convertToDTO(Rent rent) {

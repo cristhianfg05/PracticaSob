@@ -84,7 +84,6 @@ public class GameService extends AbstractFacade<Game> {
         if (g == null) {
             return Response.status(Response.Status.NO_CONTENT).entity("No hay un json hecho").build();
         } else if (checkCorrectGame(g)) {
-            System.out.print("NO CREADO ID:" + g.getId());
             return Response.status(Response.Status.NO_CONTENT).entity("No hay un json hecho").build();
         } else if (checkRepeatedGame(g, super.findAll())) {
             return Response.status(Response.Status.CONFLICT).entity("Juego Repetido").build();

@@ -52,6 +52,9 @@ public class Rent {
     private Customer customer;
     
     @Transient
+    private String customerDni;
+    
+    @Transient
     private Collection<Integer> gameIds = new ArrayList();
 
     public Rent() {
@@ -125,6 +128,14 @@ public class Rent {
 
     public void setGameIds(Collection<Integer> gameIds) {
         this.gameIds = gameIds;
+    }
+
+    public String getCustomerDni() {
+        return customerDni;
+    }
+
+    public void setCustomerDni(String customerDni) {
+        this.customerDni = customerDni;
     }
         
     

@@ -14,6 +14,7 @@ import model.entities.Customer;
 import model.entities.Game;
 import model.entities.Game.Console;
 import model.entities.Game.Type;
+import model.entities.Rent;
 
 /**
  *
@@ -36,7 +37,6 @@ public abstract class AbstractFacade<T> {
             return Response.ok().build();
         } catch (Exception e) {
             return Response.status(Response.Status.CONFLICT).build();
-
         }
     }
 

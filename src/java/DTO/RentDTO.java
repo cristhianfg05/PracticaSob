@@ -12,12 +12,12 @@ import java.util.Date;
  */
 public class RentDTO {
     private int id;
-    private Date dayReturn;
+    private Date returnDate;
     private float totalPrice;
 
     public RentDTO(int id, Date dayReturn, float totalPrice) {
         this.id = id;
-        this.dayReturn = dayReturn;
+        this.returnDate = dayReturn;
         this.totalPrice = totalPrice;
     }
 
@@ -30,11 +30,11 @@ public class RentDTO {
     }
 
     public Date getDayReturn() {
-        return dayReturn;
+        return returnDate;
     }
 
     public void setDayReturn(Date dayReturn) {
-        this.dayReturn = dayReturn;
+        this.returnDate = dayReturn;
     }
 
     public float getTotalPrice() {
@@ -46,6 +46,11 @@ public class RentDTO {
     }
 
     public RentDTO() {
+    }
+
+    @Override
+    public String toString() {
+        return "RentDTO{" + "id=" + id + ", returnDate=" + returnDate + ", totalPrice=" + totalPrice + '}';
     }
     
     
