@@ -44,18 +44,24 @@ public class RentRest extends AbstractFacade<Rent> {
 
     /**
      * GET Rent según el ID proporcionado en la request
-     * 
+     *
      * @param rentId
      * @return Response NO_CONTENT si el id proporcionado no existe
-     * @return Response OK si existe el Rent 
+     * @return Response NO_CONTENT si el id proporcionado no es numerico
+     * @return Response OK si existe el Rent
      */
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRentById(
-            @PathParam("id") int rentId
+            @PathParam("id") String rentId
     ) {
-        Rent rent = super.find(rentId);
+        Rent rent = null;
+        if (rentId.matches("\\d")) {
+            rent = super.find(Integer.parseInt(rentId));
+        } else {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
 
         if (rent == null) {
             return Response.status(Response.Status.NO_CONTENT).build();
@@ -66,25 +72,27 @@ public class RentRest extends AbstractFacade<Rent> {
     }
 
     /**
-     * POST nuevo Rent si existen los juegos del body de la request
-     * y el customer al que va enlazado
-     * 
+     * POST nuevo Rent si existen los juegos del body de la request y el
+     * customer al que va enlazado
+     *
      * @param r Rent a crear
      * @return Response CONFLICT si la lista de juegos esta vacia
      * @return Response CONFLICT si hay un juego que no existe en el sistema
      * @return Response CONFLICT si el customer al que va el rent no existe
+     * @return Response CONFLICT si el customer ya tiene un rent activo
      * @return Response CREATED si el JSON es correcto
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postNewRent(Rent r) {
+        if (r.getGameIds().isEmpty()) {
+            return Response.status(Response.Status.CONFLICT).entity("La lista de GAMES esta vacia").build();
+        }
         Query findIn = em.createNamedQuery("game.findIn").setParameter("ids", r.getGameIds());
         List<Integer> ids = (List<Integer>) r.getGameIds();
         List<Game> gameList = findIn.getResultList();
-        if (ids.isEmpty()) {
-            return Response.status(Response.Status.CONFLICT).entity("La lista de GAMES esta vacia").build();
-        }
+
         int i = 0;
         while (i < ids.size()) {
             if (em.find(Game.class, ids.get(i)) == null) {
@@ -92,10 +100,16 @@ public class RentRest extends AbstractFacade<Rent> {
             }
             i++;
         }
-
+        
+        if(juegosDisponibles(gameList))
+            return Response.status(Response.Status.CONFLICT).entity("Uno o mas juegos no estan disponibles").build();
         r.setGame(gameList);
         if (em.find(Customer.class, r.getCustomerDni()) == null) {
             return Response.status(Response.Status.CONFLICT).entity("El customer no existe en el sistema").build();
+        }
+
+        if (comprobarRentsCust(r.getCustomerDni())) {
+            return Response.status(Response.Status.CONFLICT).entity("El customer ya tiene un Rent asignado").build();
         }
         r.setCustomer(em.find(Customer.class, r.getCustomerDni()));
         super.create(r);
@@ -109,5 +123,23 @@ public class RentRest extends AbstractFacade<Rent> {
         rentDTO.setTotalPrice(rent.getTotalPrice());
 
         return rentDTO;
+    }
+
+    private boolean comprobarRentsCust(String dni) {
+        List<Rent> rents = super.findAll();
+        for(Rent r : rents){
+            if(r.getCustomer().getDni().equals(dni))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean juegosDisponibles(List<Game> gameList) {
+        for(Game g : gameList){
+            if(!g.isDisponible()){
+                return true;
+            }
+        }
+        return false;
     }
 }

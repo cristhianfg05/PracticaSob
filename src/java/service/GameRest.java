@@ -93,7 +93,7 @@ public class GameRest extends AbstractFacade<Game> {
      * 
      * @param g Juego a añadir
      * @return Response NO_CONTENT si el JSON recibido esta vacio
-     * @return Response CONFLICT si el JSON esta mal construido
+     * @return Response CONFLICT si el JSON o el XML esta mal construido
      * @return Response CONFLICT si el juego ya existe en el sistema
      * @return Response CREATED si el juego puede ser añadido
      */
@@ -105,7 +105,7 @@ public class GameRest extends AbstractFacade<Game> {
         if (g == null) {
             return Response.status(Response.Status.NO_CONTENT).entity("No hay un json hecho").build();
         } else if (checkCorrectGame(g)) {
-            return Response.status(Response.Status.CONFLICT).entity("json mal construido").build();
+            return Response.status(Response.Status.CONFLICT).entity("JSON o XML mal construido").build();
         } else if (checkRepeatedGame(g, super.findAll())) {
             return Response.status(Response.Status.CONFLICT).entity("Juego Repetido").build();
         } else {
