@@ -97,7 +97,7 @@ public class CustomerRest extends AbstractFacade<Customer> {
      *
      * @param dni Customer a modificar
      * @param cNew Nuevos datos
-     * @return Response NO_CONTENT Si el customer a modificar no existe
+     * @return Response BAD_REQUEST Si el customer a modificar no existe
      * @return Response OK Si el customer a modificar existe
      */
     @PUT
@@ -111,7 +111,7 @@ public class CustomerRest extends AbstractFacade<Customer> {
 
         Customer c = em.find(Customer.class, dni);
         if (c == null) {
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("El customer no existe").build();
         }
 
         if (cNew.getHomeAdress() != null) {

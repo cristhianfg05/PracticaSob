@@ -46,8 +46,8 @@ public class RentRest extends AbstractFacade<Rent> {
      * GET Rent según el ID proporcionado en la request
      *
      * @param rentId
-     * @return Response NO_CONTENT si el id proporcionado no existe
-     * @return Response NO_CONTENT si el id proporcionado no es numerico
+     * @return Response BAD_REQUEST si el id proporcionado no existe
+     * @return Response BAD_REQUEST si el id proporcionado no es numerico
      * @return Response OK si existe el Rent
      */
     @GET
@@ -60,11 +60,11 @@ public class RentRest extends AbstractFacade<Rent> {
         if (rentId.matches("\\d")) {
             rent = super.find(Integer.parseInt(rentId));
         } else {
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("El id es incorrecto").build();
         }
 
         if (rent == null) {
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("El rent no existe").build();
         }
 
         RentDTO rentDTO = convertToDTO(rent);
