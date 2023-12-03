@@ -109,6 +109,8 @@ public class CustomerRest extends AbstractFacade<Customer> {
             Customer cNew
     ) {
 
+        if(comprobarNewCust(cNew))
+            return Response.status(Response.Status.BAD_REQUEST).entity("JSON o XML mas construido").build();
         Customer c = em.find(Customer.class, dni);
         if (c == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("El customer no existe").build();
@@ -134,5 +136,10 @@ public class CustomerRest extends AbstractFacade<Customer> {
         super.edit(c);
         return Response.status(Response.Status.OK).entity(convertToDTO(c)).build();
     }
-
+    
+    private boolean comprobarNewCust(Customer c){
+        if(c.getHomeAdress() == null && c.getNombre() == null && c.getPswd() == null && c.getTlf() == null)        
+            return true;
+        return false;
+    }
 }
