@@ -5,10 +5,10 @@
         <group>
             <file>file:/C:/Users/crist/Documents/NetBeansProjects/Homework1/src/java/DTO/CustomerDTO.java</file>
             <file>file:/C:/Users/crist/Documents/NetBeansProjects/Homework1/src/java/service/GameRest.java</file>
-            <file>file:/C:/Users/crist/Documents/NetBeansProjects/Homework1/src/java/service/AbstractFacade.java</file>
             <file>file:/C:/Users/crist/Documents/NetBeansProjects/Homework1/src/java/model/entities/Customer.java</file>
             <file>file:/C:/Users/crist/Documents/NetBeansProjects/Homework1/src/java/service/RentRest.java</file>
             <file>file:/C:/Users/crist/Documents/NetBeansProjects/Homework1/src/java/service/CustomerRest.java</file>
+            <file>file:/C:/Users/crist/Documents/NetBeansProjects/Homework1/src/java/model/entities/Game.java</file>
         </group>
     </open-files>
 </project-private>
