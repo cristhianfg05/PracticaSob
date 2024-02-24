@@ -13,14 +13,16 @@ public class CustomerDTO {
     private String nombre;
     private String homeAdress;
     private String tlf;
+    private String pswd;
 
     public CustomerDTO() {
     }
 
-    public CustomerDTO(String nombre, String homeAdress, String tlf) {
+    public CustomerDTO(String nombre, String homeAdress, String tlf, String pswd) {
         this.nombre = nombre;
         this.homeAdress = homeAdress;
         this.tlf = tlf;
+        this.pswd = pswd;
     }
 
     public String getNombre() {
@@ -46,6 +48,15 @@ public class CustomerDTO {
     public void setTlf(String tlf) {
         this.tlf = tlf;
     }
+
+    public String getPswd() {
+        return pswd;
+    }
+
+    public void setPswd(String pswd) {
+        this.pswd = pswd;
+    }
+    
     
     
 }

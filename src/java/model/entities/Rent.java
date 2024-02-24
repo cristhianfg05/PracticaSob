@@ -4,7 +4,6 @@
  */
 package model.entities;
 
-import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Transient;
@@ -28,6 +29,10 @@ import java.util.List;
  */
 @Entity
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "rent.findByCustomerDni", query = "SELECT r FROM Rent r WHERE r.customer.dni = :customerDni")
+})
+
 public class Rent {
     private static final long serialVersion = 1L;
     

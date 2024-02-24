@@ -9,15 +9,17 @@ import authn.Secured;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import model.entities.Customer;
@@ -89,6 +91,7 @@ public class CustomerRest extends AbstractFacade<Customer> {
         dto.setHomeAdress(customer.getHomeAdress());
         dto.setNombre(customer.getNombre());
         dto.setTlf(customer.getTlf());
+        dto.setPswd(customer.getPswd());
         return dto;
     }
 
@@ -137,9 +140,42 @@ public class CustomerRest extends AbstractFacade<Customer> {
         return Response.status(Response.Status.OK).entity(convertToDTO(c)).build();
     }
     
+    @POST
+    @Override
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response create(Customer c){
+        if(comprobarNewCust(c))
+            return Response.status(Response.Status.BAD_REQUEST).entity("JSON o XML mas construido").build();
+        c.setPswd(hashString(c.getPswd()));
+        super.create(c);
+        return Response.status(Response.Status.CREATED).entity("Nuevo objeto Creado correctamente").build();
+
+            
+    }
+    
     private boolean comprobarNewCust(Customer c){
         if(c.getHomeAdress() == null && c.getNombre() == null && c.getPswd() == null && c.getTlf() == null)        
             return true;
         return false;
+    }
+    
+    public String hashString(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedhash = digest.digest(input.getBytes());
+            
+            // Convertir el byte array a una representación hexadecimal
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : encodedhash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+            
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

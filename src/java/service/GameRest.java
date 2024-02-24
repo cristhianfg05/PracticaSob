@@ -16,8 +16,10 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
@@ -87,6 +89,16 @@ public class GameRest extends AbstractFacade<Game> {
 
         return Response.status(Response.Status.OK).entity(super.findAll()).build();
     }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    public Response findGameId( @PathParam("id") int id){
+        Game g = em.find(Game.class, id);
+        if(g == null)
+            return Response.status(Response.Status.NO_CONTENT).build();
+        return Response.status(Response.Status.OK).entity(g).build();
+    }
 
     /**
      * POST new Game
@@ -107,7 +119,7 @@ public class GameRest extends AbstractFacade<Game> {
         } else if (checkCorrectGame(g)) {
             return Response.status(Response.Status.CONFLICT).entity("JSON o XML mal construido").build();
         } else if (checkRepeatedGame(g, super.findAll())) {
-            return Response.status(Response.Status.CONFLICT).entity("Juego Repetido").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Juego Repetido").build();
         } else {
             super.create(g);
             return Response.status(Response.Status.CREATED).entity("Nuevo objeto Creado correctamente").build();
@@ -154,5 +166,29 @@ public class GameRest extends AbstractFacade<Game> {
         } catch (IllegalArgumentException e) {
             return false; // El valor no es válido
         }
+    }
+    
+    /**
+     * PATCH para cambiar el estado de disponibilidad del juego por ID.
+     *
+     * @param id ID del juego a actualizar.
+     * @return Response OK si se actualiza correctamente.
+     * @return Response NOT_FOUND si el juego no existe.
+     */
+    @PATCH
+    @Path("/{id}")
+    public Response updateAvailability(@PathParam("id") int id) {
+        Game game = em.find(Game.class, id);
+
+        if (game == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Juego no encontrado").build();
+        }
+
+        // Cambiar el estado de disponibilidad
+        game.setDisponible(false);
+
+        em.merge(game);
+
+        return Response.status(Response.Status.OK).build();
     }
 }

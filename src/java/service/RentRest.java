@@ -92,7 +92,7 @@ public class RentRest extends AbstractFacade<Rent> {
         Query findIn = em.createNamedQuery("game.findIn").setParameter("ids", r.getGameIds());
         List<Integer> ids = (List<Integer>) r.getGameIds();
         List<Game> gameList = findIn.getResultList();
-
+        System.out.print("Estoy en la API"+ids+" dni"+r.getCustomerDni());
         int i = 0;
         while (i < ids.size()) {
             if (em.find(Game.class, ids.get(i)) == null) {
@@ -100,20 +100,56 @@ public class RentRest extends AbstractFacade<Rent> {
             }
             i++;
         }
-        
-        if(juegosDisponibles(gameList))
+
+        if (juegosDisponibles(gameList)) {
             return Response.status(Response.Status.CONFLICT).entity("Uno o mas juegos no estan disponibles").build();
+        }
         r.setGame(gameList);
+        System.out.print("PASO LA LISTA DE JUEGO");
         if (em.find(Customer.class, r.getCustomerDni()) == null) {
             return Response.status(Response.Status.CONFLICT).entity("El customer no existe en el sistema").build();
         }
-
+        System.out.print("PASO LA COMRPOBACIÓN DE CUSTOMER");
         if (comprobarRentsCust(r.getCustomerDni())) {
             return Response.status(Response.Status.CONFLICT).entity("El customer ya tiene un Rent asignado").build();
         }
+        System.out.print("HAGO SET DEL CUSTOMER Y LO CREO");
         r.setCustomer(em.find(Customer.class, r.getCustomerDni()));
         super.create(r);
         return Response.status(Response.Status.CREATED).entity(convertToDTO(r)).build();
+    }
+
+    /**
+     * GET Rent según el DNI del Customer proporcionado en la request
+     *
+     * @param dni DNI del Customer
+     * @return Response BAD_REQUEST si el DNI proporcionado no existe o si el
+     * Customer no tiene Rent
+     * @return Response OK con el Rent si existe
+     */
+    @GET
+    @Path("/customer/{dni}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRentByCustomerDni(
+            @PathParam("dni") String dni
+    ) {
+        Customer customer = em.find(Customer.class, dni);
+
+        if (customer == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("El DNI no existe").build();
+        }
+
+        Rent rent = em.createNamedQuery("rent.findByCustomerDni", Rent.class)
+                .setParameter("customerDni", dni)
+                .getSingleResult();
+
+        if (rent == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("El Customer no tiene Rent asociado").build();
+        }
+
+        RentDTO rentDTO = convertToDTO(rent);
+
+        return Response.status(Response.Status.OK).entity(rentDTO).build();
     }
 
     private RentDTO convertToDTO(Rent rent) {
@@ -127,16 +163,17 @@ public class RentRest extends AbstractFacade<Rent> {
 
     private boolean comprobarRentsCust(String dni) {
         List<Rent> rents = super.findAll();
-        for(Rent r : rents){
-            if(r.getCustomer().getDni().equals(dni))
+        for (Rent r : rents) {
+            if (r.getCustomer().getDni().equals(dni)) {
                 return true;
+            }
         }
         return false;
     }
 
     private boolean juegosDisponibles(List<Game> gameList) {
-        for(Game g : gameList){
-            if(!g.isDisponible()){
+        for (Game g : gameList) {
+            if (!g.isDisponible()) {
                 return true;
             }
         }
